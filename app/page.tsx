@@ -6,6 +6,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
 import { AuroraBackground } from "@/components/ui/aurora-background";
+import { supabase } from '@/lib/supabase';
 
 // Dynamically import react-pdf components to avoid hydration errors
 const PDFViewer = dynamic(() => import("@/components/PDFViewer"), {
@@ -48,11 +49,35 @@ export default function Home() {
     if (cleanedBibNo) {
       setLoading(true);
       
-      // Wait for the loader to show all messages (2 seconds × 5 messages)
-      setTimeout(() => {
+      try {
+        // Log the certificate download attempt
+        await supabase
+          .from('certificate_downloads')
+          .insert([
+            { 
+              bib_no: cleanedBibNo,
+              name: name.trim(),
+              timestamp: new Date().toISOString(),
+              status: 'attempted'
+            }
+          ]);
+
+        // Wait for the loader to show all messages (2 seconds × 5 messages)
+        setTimeout(async () => {
+          // Update the status to completed
+          await supabase
+            .from('certificate_downloads')
+            .update({ status: 'completed' })
+            .eq('bib_no', cleanedBibNo)
+            .eq('status', 'attempted');
+
+          setLoading(false);
+          setShowPDF(true);
+        }, 10000);
+      } catch (error) {
+        console.error('Error logging certificate download:', error);
         setLoading(false);
-        setShowPDF(true);
-      }, 10000);
+      }
     }
   };
 
