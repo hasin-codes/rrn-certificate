@@ -13,8 +13,12 @@ const config: Config = {
       },
       keyframes: {
         aurora: {
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
+          from: { 
+            backgroundPosition: "50% 50%, 50% 50%" 
+          },
+          to: { 
+            backgroundPosition: "350% 50%, 350% 50%" 
+          },
         },
       },
       backgroundImage: {
