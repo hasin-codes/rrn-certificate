@@ -30,7 +30,7 @@ export default function Home() {
       text: "A big congratulations on completing the RunRise Nation Noboborsho Run 1432!"
     },
     {
-      text: "Your dedication and energy made this marathon a success."
+      text: "Your dedication and energy made this event a success."
     },
     {
       text: "Thank you for celebrating the spirit of Noboborsho with us, one step at a time."
@@ -39,7 +39,7 @@ export default function Home() {
       text: "Let this achievement push you toward even bigger dreams!"
     },
     {
-      text: "We truly appreciate your participation—here's to many more wins ahead"
+      text: "We truly appreciate your participation - here's to many more wins ahead"
     }
   ];
 

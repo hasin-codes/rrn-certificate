@@ -30,7 +30,7 @@ export const AuroraBackground = ({
       `}</style>
       <div
         className={cn(
-          "transition-bg relative flex h-[100vh] flex-col items-center justify-center bg-black",
+          "transition-bg relative flex h-[100vh] flex-col items-center justify-center bg-[#2c0c0c]",
           className,
         )}
         {...props}
@@ -40,22 +40,20 @@ export const AuroraBackground = ({
           style={
             {
               "--aurora":
-                "repeating-linear-gradient(100deg,#0e7490_0%,#06b6d4_12%,#22d3ee_24%,#67e8f9_36%,#155e75_48%)",
+                "repeating-linear-gradient(100deg,#9f1239_0%,#be123c_12%,#e11d48_24%,#be123c_36%,#9f1239_48%)",
               "--dark-gradient":
-                "repeating-linear-gradient(100deg,#000_0%,#000_10%,transparent_15%,transparent_20%,#000_25%)",
-              "--cyan-100": "#67e8f9",
-              "--cyan-300": "#22d3ee",
-              "--cyan-400": "#06b6d4",
-              "--cyan-600": "#0e7490",
-              "--cyan-700": "#155e75",
-              "--black": "#000",
+                "repeating-linear-gradient(100deg,#2c0c0c_0%,#2c0c0c_10%,transparent_15%,transparent_20%,#2c0c0c_25%)",
+              "--red-500": "#e11d48",
+              "--red-600": "#be123c",
+              "--red-700": "#9f1239",
+              "--black": "#2c0c0c",
               "--transparent": "transparent",
             } as React.CSSProperties
           }
         >
           <div
             className={cn(
-              `animate-aurora pointer-events-none absolute -inset-[10px] [background-image:var(--dark-gradient),var(--aurora)] [background-size:250%,_200%] [background-position:50%_50%,50%_50%] opacity-60 blur-[10px] will-change-transform [--aurora:repeating-linear-gradient(100deg,var(--cyan-600)_0%,var(--cyan-400)_12%,var(--cyan-300)_24%,var(--cyan-100)_36%,var(--cyan-700)_48%)] [--dark-gradient:repeating-linear-gradient(100deg,var(--black)_0%,var(--black)_10%,var(--transparent)_15%,var(--transparent)_20%,var(--black)_25%)] after:absolute after:inset-0 after:[background-image:var(--dark-gradient),var(--aurora)] after:[background-size:200%,_100%] after:[background-attachment:fixed] after:mix-blend-difference after:content-[""]`,
+              `animate-aurora pointer-events-none absolute -inset-[10px] [background-image:var(--dark-gradient),var(--aurora)] [background-size:250%,_200%] [background-position:50%_50%,50%_50%] opacity-75 blur-[10px] will-change-transform [--aurora:repeating-linear-gradient(100deg,var(--red-700)_0%,var(--red-600)_12%,var(--red-500)_24%,var(--red-600)_36%,var(--red-700)_48%)] [--dark-gradient:repeating-linear-gradient(100deg,var(--black)_0%,var(--black)_10%,var(--transparent)_15%,var(--transparent)_20%,var(--black)_25%)] after:absolute after:inset-0 after:[background-image:var(--dark-gradient),var(--aurora)] after:[background-size:200%,_100%] after:[background-attachment:fixed] after:mix-blend-difference after:content-[""]`,
               showRadialGradient &&
                 `[mask-image:radial-gradient(ellipse_at_100%_0%,black_10%,var(--transparent)_70%)]`,
             )}
