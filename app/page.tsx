@@ -46,37 +46,34 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanedBibNo = bibNo.trim().replace(/\s+/g, '');
-    if (cleanedBibNo) {
-      setLoading(true);
-      
+    const normalizedBibNo = cleanedBibNo.charAt(0).toUpperCase() + cleanedBibNo.slice(1);
+    if (!name.trim()) {
+      alert("Please enter your name");
+      return;
+    }
+    if (normalizedBibNo) {
+      // Check if BIB exists before showing loader
       try {
-        // Log the certificate download attempt
-        await supabase
-          .from('certificate_downloads')
-          .insert([
-            { 
-              bib_no: cleanedBibNo,
-              name: name.trim(),
-              timestamp: new Date().toISOString(),
-              status: 'attempted'
-            }
-          ]);
+        const { data } = supabase.storage
+          .from("bibs")
+          .getPublicUrl(`${normalizedBibNo}.pdf`);
 
-        // Wait for the loader to show all messages (2 seconds × 5 messages)
-        setTimeout(async () => {
-          // Update the status to completed
-          await supabase
-            .from('certificate_downloads')
-            .update({ status: 'completed' })
-            .eq('bib_no', cleanedBibNo)
-            .eq('status', 'attempted');
-
-          setLoading(false);
-          setShowPDF(true);
-        }, 10000);
+        if (data?.publicUrl) {
+          const response = await fetch(data.publicUrl, { method: 'HEAD' });
+          if (response.ok) {
+            setLoading(true); // Start the multi-step loader
+            setTimeout(() => {
+              setLoading(false);
+              setShowPDF(true);
+            }, 10000); // Show loader for 10 seconds
+            return;
+          }
+        }
+        // If BIB not found
+        alert("Certificate not found. Please check your BIB number.");
       } catch (error) {
-        console.error('Error logging certificate download:', error);
-        setLoading(false);
+        console.error("Error checking BIB:", error);
+        alert("Error checking BIB. Please try again.");
       }
     }
   };
@@ -85,10 +82,12 @@ export default function Home() {
     setShowPDF(false);
   };
 
-  // Clean spaces as user types
+  // Clean spaces and normalize case as user types
   const handleBibChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s+/g, ''); // Remove spaces while typing
-    setBibNo(value);
+    // Capitalize first letter if it exists
+    const normalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
+    setBibNo(normalizedValue);
   };
 
   return (
@@ -120,7 +119,7 @@ export default function Home() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-neutral-200">
-                        Enter Your Name
+                        Enter Your Name *
                       </Label>
                       <Input
                         id="name"
@@ -128,6 +127,7 @@ export default function Home() {
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Enter your name"
                         type="text"
+                        required
                         className="text-center bg-black/50 border-white/10 text-white placeholder:text-neutral-500"
                       />
                     </div>

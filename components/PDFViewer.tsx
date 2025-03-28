@@ -15,6 +15,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
+  const [downloadComplete, setDownloadComplete] = useState(false);
   const [scale, setScale] = useState(0.7);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -40,23 +41,47 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
     
     try {
       setDownloading(true);
-      const response = await fetch(pdfUrl);
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
       
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `BIB-${bibNo}.pdf`;
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      window.URL.revokeObjectURL(blobUrl);
+      // Log the certificate download attempt
+      await supabase
+        .from('certificate_downloads')
+        .insert([
+          { 
+            bib_no: bibNo,
+            timestamp: new Date().toISOString(),
+            status: 'attempted'
+          }
+        ]);
+
+      // Wait for the loader to show all messages (2 seconds × 5 messages)
+      setTimeout(async () => {
+        const response = await fetch(pdfUrl);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `BIB-${bibNo}.pdf`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(blobUrl);
+
+        // Update the status to completed
+        await supabase
+          .from('certificate_downloads')
+          .update({ status: 'completed' })
+          .eq('bib_no', bibNo)
+          .eq('status', 'attempted');
+
+        setDownloading(false);
+        setDownloadComplete(true);
+      }, 10000);
     } catch (err) {
       console.error('Download failed:', err);
       alert('Failed to download PDF. Please try again.');
-    } finally {
       setDownloading(false);
     }
   };
@@ -102,83 +127,89 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-[350px]">
-        <div className="text-red-400">{error}</div>
+      <div className="space-y-4 text-center">
+        <p className="text-red-400">
+          Certificate not found. Please check your Name and BIB number, or ensure that you have completed the run.
+        </p>
+        <button
+          onClick={onBack}
+          className="w-full bg-gradient-to-br from-neutral-50 to-neutral-400 text-black font-semibold h-10 rounded-md transition-all hover:opacity-90 hover:scale-[0.98] active:scale-[0.97]"
+        >
+          Go Back
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col space-y-4">
-      {/* Header with Back Button and BIB Number */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="text-neutral-400 hover:text-white transition-colors flex items-center space-x-1"
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="20" 
-            height="20" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
+    <div className="space-y-4">
+      {error ? (
+        <div className="space-y-4 text-center">
+          <p className="text-red-400">
+            Certificate not found. Please check your Name and BIB number, or ensure that you have completed the run.
+          </p>
+          <button
+            onClick={onBack}
+            className="w-full bg-gradient-to-br from-neutral-50 to-neutral-400 text-black font-semibold h-10 rounded-md transition-all hover:opacity-90 hover:scale-[0.98] active:scale-[0.97]"
           >
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          <span>Back</span>
-        </button>
-        <div className="text-center space-y-1">
-          <p className="text-neutral-400 text-sm">BIB No</p>
-          <p className="text-white text-xl font-semibold">{bibNo}</p>
+            Go Back
+          </button>
         </div>
-        <div className="w-[72px]" /> {/* Spacer for alignment */}
-      </div>
+      ) : (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <button
+              onClick={onBack}
+              className="text-neutral-400 hover:text-white transition-colors"
+            >
+              ← Back
+            </button>
+            <p className="text-neutral-400">BIB: {bibNo}</p>
+          </div>
 
-      {/* PDF Viewer */}
-      <div ref={containerRef} className="h-[350px] w-full overflow-hidden bg-black/50 rounded-lg flex items-center justify-center">
-        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
+          {/* PDF Viewer */}
+          <div ref={containerRef} className="h-[350px] w-full overflow-hidden bg-black/50 rounded-lg flex items-center justify-center">
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
+              {pdfUrl && (
+                <div style={{ 
+                  height: '100%', 
+                  width: '100%', 
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Viewer
+                    fileUrl={pdfUrl}
+                    defaultScale={scale}
+                    theme={{
+                      theme: 'dark',
+                    }}
+                    plugins={[]}
+                    renderLoader={() => (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="animate-pulse text-neutral-400">
+                          Loading PDF...
+                        </div>
+                      </div>
+                    )}
+                  />
+                </div>
+              )}
+            </Worker>
+          </div>
+
+          {/* Download Button */}
           {pdfUrl && (
-            <div style={{ 
-              height: '100%', 
-              width: '100%', 
-              padding: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <Viewer
-                fileUrl={pdfUrl}
-                defaultScale={scale}
-                theme={{
-                  theme: 'dark',
-                }}
-                plugins={[]}
-                renderLoader={() => (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="animate-pulse text-neutral-400">
-                      Loading PDF...
-                    </div>
-                  </div>
-                )}
-              />
-            </div>
+            <button
+              onClick={handleDownload}
+              disabled={downloading}
+              className="w-full bg-gradient-to-br from-neutral-50 to-neutral-400 text-black font-semibold h-10 rounded-md transition-all hover:opacity-90 hover:scale-[0.98] active:scale-[0.97] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {downloading ? 'Downloading...' : downloadComplete ? 'Certificate Downloaded!' : 'Download Certificate'}
+            </button>
           )}
-        </Worker>
-      </div>
-
-      {/* Download Button */}
-      {pdfUrl && (
-        <button
-          onClick={handleDownload}
-          disabled={downloading}
-          className="w-full bg-gradient-to-br from-neutral-50 to-neutral-400 text-black font-semibold h-10 rounded-md transition-all hover:opacity-90 hover:scale-[0.98] active:scale-[0.97] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {downloading ? 'Downloading...' : 'Download Certificate'}
-        </button>
+        </>
       )}
     </div>
   );
