@@ -3,14 +3,14 @@ import { GeistSans, GeistMono } from 'geist/font';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GIGABYTE Presents RunRise Nation Noboborsho Run 1432 - BIB Collection",
-  description: "Retrieve your BIB easily for the RunRise Nation Noboborsho Run 1432. Simply enter your BIB number to download your official race BIB.",
+  title: "GIGABYTE Presents RunRise Nation Noboborsho Run 1432 - Certificate Collection",
+  description: "Retrieve your Certificate easily for the RunRise Nation Noboborsho Run 1432. Simply enter your Certificate number to download your official race Certificate.",
   keywords: [
     "RunRise Nation",
     "Noboborsho Run",
-    "BIB Collection",
-    "Race BIB Download",
-    "Marathon BIB",
+    "Certificate Collection",
+    "Race Certificate Download",
+    "Marathon Certificate",
     "Bangladesh Running Event",
     "GIGABYTE Run",
     "Sports Event",
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "RunRise Nation" }],
   openGraph: {
-    title: "GIGABYTE Presents RunRise Nation Noboborsho Run 1432 - BIB Collection",
-    description: "Retrieve your BIB easily for the RunRise Nation Noboborsho Run 1432. Simply enter your BIB number to download your official race BIB.",
+    title: "GIGABYTE Presents RunRise Nation Noboborsho Run 1432 - Certificate Collection",
+    description: "Retrieve your Certificate easily for the RunRise Nation Noboborsho Run 1432. Simply enter your Certificate number to download your official race Certificate.",
     images: ['/nbbrsh.png'],
     type: 'website',
   },

@@ -19,7 +19,7 @@ const PDFViewer = dynamic(() => import("@/components/PDFViewer"), {
 });
 
 export default function Home() {
-  const [bibNo, setBibNo] = useState("");
+  const [CertificateNo, setCertificateNo] = useState("");
   const [name, setName] = useState("");
   const [showPDF, setShowPDF] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,18 +45,18 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanedBibNo = bibNo.trim().replace(/\s+/g, '');
-    const normalizedBibNo = cleanedBibNo.charAt(0).toUpperCase() + cleanedBibNo.slice(1);
+    const cleanedCertificateNo = CertificateNo.trim().replace(/\s+/g, '');
+    const normalizedCertificateNo = cleanedCertificateNo.charAt(0).toUpperCase() + cleanedCertificateNo.slice(1);
     if (!name.trim()) {
       alert("Please enter your name");
       return;
     }
-    if (normalizedBibNo) {
-      // Check if BIB exists before showing loader
+    if (normalizedCertificateNo) {
+      // Check if Certificate exists before showing loader
       try {
         const { data } = supabase.storage
           .from("cert")
-          .getPublicUrl(`${normalizedBibNo}.pdf`);
+          .getPublicUrl(`${normalizedCertificateNo}.pdf`);
 
         if (data?.publicUrl) {
           const response = await fetch(data.publicUrl, { method: 'HEAD' });
@@ -69,11 +69,11 @@ export default function Home() {
             return;
           }
         }
-        // If BIB not found
-        alert("Certificate not found. Please check your BIB number.");
+        // If Certificate not found
+        alert("Certificate not found. Please check your Certificate number.");
       } catch (error) {
-        console.error("Error checking BIB:", error);
-        alert("Error checking BIB. Please try again.");
+        console.error("Error checking Certificate:", error);
+        alert("Error checking Certificate. Please try again.");
       }
     }
   };
@@ -83,11 +83,11 @@ export default function Home() {
   };
 
   // Clean spaces and normalize case as user types
-  const handleBibChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCertificateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s+/g, ''); // Remove spaces while typing
     // Capitalize first letter if it exists
     const normalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
-    setBibNo(normalizedValue);
+    setCertificateNo(normalizedValue);
   };
 
   return (
@@ -133,14 +133,14 @@ export default function Home() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="bib" className="text-neutral-200">
-                        Enter Your BIB No
+                      <Label htmlFor="Certificate" className="text-neutral-200">
+                        Enter Your Certificate No
                       </Label>
                       <Input
-                        id="bib"
-                        value={bibNo}
-                        onChange={handleBibChange}
-                        placeholder="Enter your BIB number"
+                        id="Certificate"
+                        value={CertificateNo}
+                        onChange={handleCertificateChange}
+                        placeholder="Enter your Certificate number"
                         type="text"
                         className="text-center bg-black/50 border-white/10 text-white placeholder:text-neutral-500"
                       />
@@ -156,7 +156,7 @@ export default function Home() {
                 </form>
               ) : (
                 <PDFViewer 
-                  bibNo={bibNo.trim().replace(/\s+/g, '')} 
+                  CertificateNo={CertificateNo.trim().replace(/\s+/g, '')} 
                   onBack={handleBack}
                 />
               )}

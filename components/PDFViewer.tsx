@@ -6,11 +6,11 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import { supabase } from "@/lib/supabase";
 
 interface PDFViewerProps {
-  bibNo: string;
+  CertificateNo: string;
   onBack: () => void;
 }
 
-export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
+export default function PDFViewer({ CertificateNo, onBack }: PDFViewerProps) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
         .from('certificate_downloads')
         .insert([
           { 
-            bib_no: bibNo,
+            Certificate_no: CertificateNo,
             timestamp: new Date().toISOString(),
             status: 'attempted'
           }
@@ -61,7 +61,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
         
         const link = document.createElement('a');
         link.href = blobUrl;
-        link.download = `BIB-${bibNo}.pdf`;
+        link.download = `Certificate-${CertificateNo}.pdf`;
         
         document.body.appendChild(link);
         link.click();
@@ -73,7 +73,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
         await supabase
           .from('certificate_downloads')
           .update({ status: 'completed' })
-          .eq('bib_no', bibNo)
+          .eq('Certificate_no', CertificateNo)
           .eq('status', 'attempted');
 
         setDownloading(false);
@@ -94,33 +94,33 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
 
         const { data } = supabase.storage
           .from("cert")
-          .getPublicUrl(`${bibNo}.pdf`);
+          .getPublicUrl(`${CertificateNo}.pdf`);
 
         if (data?.publicUrl) {
           const response = await fetch(data.publicUrl, { method: 'HEAD' });
           if (response.ok) {
             setPdfUrl(data.publicUrl);
           } else {
-            setError("BIB number not found");
+            setError("Certificate number not found");
           }
         } else {
-          setError("Error accessing BIB");
+          setError("Error accessing Certificate");
         }
       } catch (err) {
-        console.error("Error loading BIB:", err);
-        setError("Error loading BIB");
+        console.error("Error loading Certificate:", err);
+        setError("Error loading Certificate");
       } finally {
         setLoading(false);
       }
     };
 
     checkAndFetchPdf();
-  }, [bibNo]);
+  }, [CertificateNo]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[350px]">
-        <div className="animate-pulse text-neutral-400">Checking BIB number...</div>
+        <div className="animate-pulse text-neutral-400">Checking Certificate number...</div>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
     return (
       <div className="space-y-4 text-center">
         <p className="text-red-400">
-          Certificate not found. Please check your Name and BIB number, or ensure that you have completed the run.
+          Certificate not found. Please check your Name and Certificate number, or ensure that you have completed the run.
         </p>
         <button
           onClick={onBack}
@@ -146,7 +146,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
       {error ? (
         <div className="space-y-4 text-center">
           <p className="text-red-400">
-            Certificate not found. Please check your Name and BIB number, or ensure that you have completed the run.
+            Certificate not found. Please check your Name and Certificate number, or ensure that you have completed the run.
           </p>
           <button
             onClick={onBack}
@@ -164,7 +164,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
             >
               ← Back
             </button>
-            <p className="text-neutral-400">BIB: {bibNo}</p>
+            <p className="text-neutral-400">Certificate: {CertificateNo}</p>
           </div>
 
           {/* PDF Viewer */}

@@ -19,9 +19,9 @@ Issues: None
 Resolution: Improved form visibility with enhanced blur effect, better z-index handling, and refined input styling
 
 Date: 2024-03-19
-Task: Created BIB download form
+Task: Created Certificate download form
 Issues: None
-Resolution: Implemented a centered, mobile-responsive form with Aceternity UI components for BIB number input
+Resolution: Implemented a centered, mobile-responsive form with Aceternity UI components for Certificate number input
 
 Date: 2024-03-19
 Task: Updated page theme to always use dark mode
@@ -59,8 +59,8 @@ Issues: Options object causing unnecessary reloads
 Resolution: Memoized PDF viewer options using useMemo to prevent rerenders
 
 Date: 2024-03-19
-Task: Added BIB number space filtering
-Issues: Spaces in BIB numbers causing lookup failures
+Task: Added Certificate number space filtering
+Issues: Spaces in Certificate numbers causing lookup failures
 Resolution: Implemented automatic space removal during input and before Supabase queries
 
 Date: 2024-03-19
@@ -104,9 +104,9 @@ Issues: Page was scrollable in some cases
 Resolution: Implemented fixed positioning and overflow control for entire application
 
 Date: 2024-03-19
-Task: Added BIB number display in PDF view
-Issues: BIB number not visible in PDF view step
-Resolution: Added BIB number display above PDF viewer with proper styling
+Task: Added Certificate number display in PDF view
+Issues: Certificate number not visible in PDF view step
+Resolution: Added Certificate number display above PDF viewer with proper styling
 
 Date: 2024-03-19
 Task: Added back navigation
