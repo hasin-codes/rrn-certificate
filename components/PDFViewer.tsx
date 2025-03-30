@@ -93,7 +93,7 @@ export default function PDFViewer({ bibNo, onBack }: PDFViewerProps) {
         setError(null);
 
         const { data } = supabase.storage
-          .from("bibs")
+          .from("cert")
           .getPublicUrl(`${bibNo}.pdf`);
 
         if (data?.publicUrl) {

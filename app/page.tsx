@@ -55,7 +55,7 @@ export default function Home() {
       // Check if BIB exists before showing loader
       try {
         const { data } = supabase.storage
-          .from("bibs")
+          .from("cert")
           .getPublicUrl(`${normalizedBibNo}.pdf`);
 
         if (data?.publicUrl) {
